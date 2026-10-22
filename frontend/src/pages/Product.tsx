@@ -127,7 +127,7 @@ export function ProductPage() {
 
       {others.length > 0 && (
         <section className="px-5 py-24 md:px-12">
-          <h2 className="display text-center text-5xl uppercase leading-none text-moss md:text-7xl">Las otras urnas</h2>
+          <h2 className="display text-center text-3xl uppercase leading-none text-moss sm:text-5xl md:text-7xl">Las otras urnas</h2>
           <div className="mx-auto mt-14 grid max-w-5xl gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {others.map((item) => (
               <Link
@@ -204,7 +204,7 @@ function UrnStage({
       <div className="sticky top-0 h-svh overflow-hidden">
         <div className="hero-grain" aria-hidden />
         <h1
-          className="pointer-events-none absolute top-[10%] left-1/2 z-0 w-[96%] text-center text-[16vw] leading-[0.82] text-[#173E3A] uppercase md:text-[10vw]"
+          className="pointer-events-none absolute top-[8%] left-1/2 z-0 w-[96%] text-center text-[18vw] leading-[0.82] text-[#173E3A] uppercase sm:top-[10%] sm:text-[14vw] md:text-[10vw]"
           style={{
             fontFamily: 'Playfair Display, serif',
             transform: `translate(-50%, -${titleLift}vh)`,
@@ -213,7 +213,7 @@ function UrnStage({
           {name}
         </h1>
         <p
-          className="pointer-events-none absolute top-[30%] left-1/2 z-20 w-[min(36rem,76vw)] rounded-sm bg-[#F8F5EF]/88 px-5 py-3 text-center text-xl leading-relaxed text-[#173E3A] md:text-[1.65rem]"
+          className="pointer-events-none absolute top-[28%] left-1/2 z-20 w-[min(36rem,88vw)] rounded-sm bg-[#F8F5EF]/88 px-3 py-2 text-center text-base leading-relaxed text-[#173E3A] sm:top-[30%] sm:px-5 sm:py-3 sm:text-xl md:text-[1.65rem]"
           style={{
             fontFamily: 'Playfair Display, serif',
             opacity: story,
@@ -223,22 +223,22 @@ function UrnStage({
           {blurb}
         </p>
         <div
-          className="pointer-events-none absolute left-1/2 z-10 h-[125vh] w-[min(100vw,62rem)]"
+          className="pointer-events-none absolute left-1/2 z-10 h-[100vh] w-[min(100vw,62rem)] sm:h-[125vh]"
           style={{
-            bottom: `calc(-38vh + ${urnRise}vh)`,
+            bottom: `calc(-32vh + ${urnRise}vh)`,
             transform: 'translateX(-50%)',
           }}
         >
           <UrnView slug={slug} className="h-full w-full" />
         </div>
         <div
-          className="absolute inset-x-0 top-[48%] z-20 flex items-start justify-between gap-8 px-6 md:px-20"
+          className="absolute inset-x-0 top-[46%] z-20 flex items-start justify-between gap-3 px-3 sm:top-[48%] sm:gap-8 sm:px-6 md:px-20"
           style={{ opacity: Math.max(0.35, 1 - story * 0.55) }}
         >
-          <p className="rounded-sm bg-[#F8F5EF]/8 px-3 py-1 text-2xl text-[#173E3A] md:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <p className="rounded-sm bg-[#F8F5EF]/8 px-2 py-1 text-sm text-[#173E3A] sm:px-3 sm:text-2xl md:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
             {category}
           </p>
-          <p className="max-w-[16rem] rounded-sm bg-[#F8F5EF]/8 px-3 py-1 text-right text-2xl text-[#173E3A] md:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <p className="max-w-[9rem] rounded-sm bg-[#F8F5EF]/8 px-2 py-1 text-right text-sm text-[#173E3A] sm:max-w-[16rem] sm:px-3 sm:text-2xl md:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
             {material}
           </p>
         </div>

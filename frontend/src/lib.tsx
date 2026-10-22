@@ -1,3 +1,5 @@
+import { staticApi } from './catalog'
+
 export type Product = {
   slug: string
   name: string
@@ -61,14 +63,24 @@ export function toneForUrn(slug: string) {
 }
 
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const headers = new Headers(init?.headers)
-  if (init?.body) headers.set('Content-Type', 'application/json')
-  const token = sessionStorage.getItem('eternal-token')
-  if (token) headers.set('Authorization', `Bearer ${token}`)
-  const response = await fetch(path, { ...init, headers })
-  const data = (await response.json().catch(() => ({}))) as { error?: string }
-  if (!response.ok) throw new Error(data.error || 'No se pudo completar la acción')
-  return data as T
+  const method = init?.method ?? 'GET'
+  const fallback = () => {
+    const data = staticApi(path, method)
+    if (data === undefined) throw new Error('No se pudo completar la acción')
+    return data as T
+  }
+
+  try {
+    const headers = new Headers(init?.headers)
+    if (init?.body) headers.set('Content-Type', 'application/json')
+    const token = sessionStorage.getItem('eternal-token')
+    if (token) headers.set('Authorization', `Bearer ${token}`)
+    const response = await fetch(path, { ...init, headers })
+    if (!response.ok) return fallback()
+    return (await response.json()) as T
+  } catch {
+    return fallback()
+  }
 }
 
 export const btn =

@@ -158,7 +158,7 @@ export function Layout() {
           </div>
           <div className="flex flex-1 flex-col justify-center gap-3">
             {links.map((link) => (
-              <Link key={link.to} to={link.to} className="display text-5xl uppercase leading-none md:text-7xl">
+              <Link key={link.to} to={link.to} className="display text-4xl uppercase leading-none sm:text-5xl md:text-7xl">
                 {link.label}
               </Link>
             ))}

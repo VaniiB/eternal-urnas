@@ -16,7 +16,7 @@ export function ImpactPage() {
 
   return (
     <main className="px-5 pb-24 md:px-12">
-      <h1 className="display mt-10 text-5xl">Impacto</h1>
+      <h1 className="display mt-10 text-3xl sm:text-5xl">Impacto</h1>
       <p className="mt-4 max-w-xl text-ink/70">
         Cada urna que vuelve a la tierra suma acá. Los números salen de la base y se actualizan desde el panel.
       </p>

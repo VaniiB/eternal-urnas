@@ -40,10 +40,10 @@ export function Home() {
   const [height, setHeight] = useState(() => window.innerHeight)
   const drag = useRef({ x: 0, start: 0, moved: false, active: false })
   const tones = urnTone
-  // Escala pensada para verse como las capturas de 125% cuando el zoom está en 100%
-  const urnBox = width < 640 ? 320 : width < 900 ? 420 : 520
-  const urnHeight = width < 640 ? 430 : width < 900 ? 580 : 720
   const mobile = width < 640
+  const tablet = width >= 640 && width < 900
+  const urnBox = mobile ? Math.round(Math.min(260, width * 0.68)) : tablet ? 360 : 520
+  const urnHeight = Math.round(urnBox * (mobile ? 1.35 : tablet ? 1.38 : 1.38))
 
   useEffect(() => {
     const onResize = () => {
@@ -70,13 +70,16 @@ export function Home() {
   const sidePlants = plants.filter((product) => product.slug !== featuredPlant?.slug).slice(0, 2)
   const flowers = plants.filter((product) => !product.category.toLocaleLowerCase('es').includes('árbol'))
   const trees = plants.filter((product) => product.category.toLocaleLowerCase('es').includes('árbol'))
-  const edgeGap = mobile ? 12 : Math.max(20, Math.min(40, (width - 1100) / 14))
-  const heroH = Math.max(height, 640)
-  const nameBlock = mobile ? 60 : 80
-  const bottomPad = mobile ? 14 : 18
-  const centerScale = Math.min(mobile ? 1.2 : 1.42, Math.max(mobile ? 1.06 : 1.24, (heroH - nameBlock - bottomPad * 2) / urnHeight))
+  const edgeGap = mobile ? -Math.round(urnBox * 0.08) : tablet ? 12 : Math.max(20, Math.min(40, (width - 1100) / 14))
+  const heroH = Math.max(height, mobile ? 520 : 640)
+  const nameBlock = mobile ? 48 : tablet ? 64 : 80
+  const bottomPad = mobile ? 10 : 18
+  const centerScale = Math.min(
+    mobile ? 1.12 : tablet ? 1.28 : 1.42,
+    Math.max(mobile ? 1.0 : tablet ? 1.12 : 1.24, (heroH - nameBlock - bottomPad * 2) / urnHeight),
+  )
   const stackH = nameBlock + Math.round(urnHeight * centerScale)
-  const topPad = Math.max(12, Math.round((heroH - stackH) / 2))
+  const topPad = Math.max(mobile ? 48 : 12, Math.round((heroH - stackH) / 2))
   const gap = (urnBox * urnScale(0, centerScale) + urnBox * urnScale(1, centerScale)) / 2 + edgeGap
   const count = uniqueUrns.length
   const cursor = count === 0 ? 0 : -offset / gap
@@ -127,7 +130,7 @@ export function Home() {
         <button
           type="button"
           aria-label="Anterior"
-          className="absolute top-1/2 left-2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--page-gold)] bg-[var(--page-surface)]/90 text-xl text-[var(--page-ink)] sm:left-4 sm:h-12 sm:w-12 sm:text-2xl"
+          className="absolute top-1/2 left-1.5 z-40 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--page-gold)] bg-[var(--page-surface)]/90 text-base text-[var(--page-ink)] sm:left-4 sm:h-12 sm:w-12 sm:text-2xl"
           onPointerDown={(event) => event.stopPropagation()}
           onClick={() => setOffset((value) => value + gap)}
         >
@@ -136,7 +139,7 @@ export function Home() {
         <button
           type="button"
           aria-label="Siguiente"
-          className="absolute top-1/2 right-2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--page-gold)] bg-[var(--page-surface)]/90 text-xl text-[var(--page-ink)] sm:right-4 sm:h-12 sm:w-12 sm:text-2xl"
+          className="absolute top-1/2 right-1.5 z-40 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--page-gold)] bg-[var(--page-surface)]/90 text-base text-[var(--page-ink)] sm:right-4 sm:h-12 sm:w-12 sm:text-2xl"
           onPointerDown={(event) => event.stopPropagation()}
           onClick={() => setOffset((value) => value - gap)}
         >
@@ -149,10 +152,10 @@ export function Home() {
             place = ((place % count) + count) % count
             if (place >= count / 2) place -= count
             const steps = Math.abs(place)
-            if (steps > 1.2) return null
+            if (steps > (mobile ? 0.95 : 1.2)) return null
             const x = urnShift(place, edgeGap, centerScale, urnBox)
-            const scale = urnScale(place, centerScale)
-            const rot = Math.sign(place) * Math.min(steps, 1) * (mobile ? 5 : 8)
+            const scale = urnScale(place, centerScale) * (mobile && steps > 0.35 ? 0.92 : 1)
+            const rot = Math.sign(place) * Math.min(steps, 1) * (mobile ? 4 : 8)
             const centered = steps < 0.35
             const boxW = Math.round(urnBox * scale)
             const boxH = Math.round(urnHeight * scale)
@@ -176,12 +179,12 @@ export function Home() {
                 }}
               >
                 <p
-                  className="pointer-events-none mb-2 w-full text-center leading-none tracking-wide text-[#173E3A] uppercase"
+                  className="pointer-events-none mb-1 w-full truncate text-center leading-none tracking-wide text-[#173E3A] uppercase sm:mb-2"
                   style={{
                     fontFamily: 'Playfair Display, serif',
-                    fontSize: centered ? (mobile ? '2.8rem' : '3.85rem') : mobile ? '1.35rem' : '1.85rem',
+                    fontSize: centered ? (mobile ? '1.85rem' : tablet ? '2.8rem' : '3.85rem') : mobile ? '0.95rem' : tablet ? '1.35rem' : '1.85rem',
                     height: nameBlock - 8,
-                    transform: `translate(${place > 0.2 ? 60 : place < -0.2 ? -16 : 0}px, 24px)`,
+                    transform: `translate(${place > 0.2 ? (mobile ? 18 : 60) : place < -0.2 ? (mobile ? -8 : -16) : 0}px, ${mobile ? 12 : 24}px)`,
                   }}
                 >
                   {product.name}
@@ -191,7 +194,7 @@ export function Home() {
                   style={{
                     width: boxW,
                     height: boxH,
-                    transform: `translateY(${centered ? -48 : -28}px) rotate(${rot}deg)`,
+                    transform: `translateY(${centered ? (mobile ? -24 : -48) : mobile ? -12 : -28}px) rotate(${rot}deg)`,
                   }}
                 >
                   <UrnView
@@ -207,12 +210,12 @@ export function Home() {
 
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="text-center text-5xl md:text-6xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 md:py-20">
+        <h2 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl" style={{ fontFamily: 'Playfair Display, serif' }}>
           Explorá por categoría
         </h2>
-        <div className="mt-12 grid gap-8 md:grid-cols-[200px_1fr]">
-          <ul className="space-y-4 text-sm">
+        <div className="mt-8 grid gap-6 md:mt-12 md:grid-cols-[180px_1fr] md:gap-8">
+          <ul className="-mx-4 flex gap-5 overflow-x-auto px-4 text-sm whitespace-nowrap md:mx-0 md:block md:space-y-4 md:overflow-visible md:px-0 md:whitespace-normal">
             <li>
               <Link to="/tienda" className="hover:text-[#70908B]">
                 Urnas
@@ -234,16 +237,16 @@ export function Home() {
               </Link>
             </li>
           </ul>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
             <Link
               to="/tienda"
-              className="relative flex min-h-64 items-end p-6 text-[#173E3A] md:row-span-2"
+              className="relative flex min-h-52 items-end p-5 text-[#173E3A] sm:min-h-64 sm:p-6 md:row-span-2"
               style={{ backgroundColor: toneForUrn('bruma') }}
             >
               <div className="pointer-events-none absolute inset-0">
                 <UrnView slug="bruma" className="h-full w-full" />
               </div>
-              <span className="relative text-3xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <span className="relative text-2xl sm:text-3xl" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Urnas
               </span>
             </Link>
@@ -253,16 +256,16 @@ export function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-8">
-        <h2 className="text-center text-5xl md:text-6xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+      <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
+        <h2 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl" style={{ fontFamily: 'Playfair Display, serif' }}>
           Elegidas
         </h2>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-5 lg:grid-cols-4">
           {popular.map((product) => (
             <Link
               key={product.slug}
               to={product.kind === 'urna' ? `/tienda/${product.slug}` : `/plantas/${product.slug}`}
-              className="relative flex min-h-80 flex-col justify-end overflow-hidden p-5 text-[#173E3A] md:min-h-96"
+              className="relative flex min-h-56 flex-col justify-end overflow-hidden p-3 text-[#173E3A] sm:min-h-80 sm:p-5 md:min-h-96"
               style={{
                 backgroundColor: product.kind === 'urna' ? toneForUrn(product.slug) : '#E2E8F1',
               }}
@@ -278,11 +281,11 @@ export function Home() {
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               )}
-              <div className={`relative ${product.kind === 'planta' ? 'bg-[#FDFBF8]/85 px-3 py-2' : ''}`}>
-                <p className="text-lg" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <div className={`relative ${product.kind === 'planta' ? 'bg-[#FDFBF8]/85 px-2 py-1.5 sm:px-3 sm:py-2' : ''}`}>
+                <p className="text-base sm:text-lg" style={{ fontFamily: 'Playfair Display, serif' }}>
                   {product.name}
                 </p>
-                <p className="mt-1 text-sm font-semibold">{money(product.priceCents)}</p>
+                <p className="mt-1 text-xs font-semibold sm:text-sm">{money(product.priceCents)}</p>
               </div>
             </Link>
           ))}
@@ -295,12 +298,12 @@ export function Home() {
       </section>
 
       {combo && (
-        <section className="mx-auto grid max-w-6xl items-center gap-8 px-6 py-16 md:grid-cols-2">
-          <div className="p-6" style={{ backgroundColor: toneForUrn(combo.slug) }}>
-            <div className="h-80">
+        <section className="mx-auto grid max-w-6xl items-center gap-5 px-4 py-12 sm:gap-8 sm:px-6 sm:py-16 md:grid-cols-2">
+          <div className="p-5 sm:p-6" style={{ backgroundColor: toneForUrn(combo.slug) }}>
+            <div className="h-56 sm:h-80">
               <UrnView slug={combo.slug} className="h-full w-full" />
             </div>
-            <h2 className="mt-6 text-3xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <h2 className="mt-5 text-2xl sm:mt-6 sm:text-3xl" style={{ fontFamily: 'Playfair Display, serif' }}>
               {combo.name}
             </h2>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-[#274C4A]/75">{combo.blurb}</p>
@@ -309,12 +312,12 @@ export function Home() {
               Ver este conjunto
             </Link>
           </div>
-          <div className="grid gap-4 self-stretch md:grid-rows-2">
+          <div className="grid grid-cols-2 gap-3 self-stretch sm:gap-4 md:grid-cols-1 md:grid-rows-2">
             {sidePlants.map((plant) => (
               <Link
                 key={plant.slug}
                 to={`/plantas/${plant.slug}`}
-                className="relative flex min-h-48 items-end overflow-hidden md:min-h-0"
+                className="relative flex min-h-40 items-end overflow-hidden sm:min-h-48 md:min-h-0"
                 data-cursor="Ver planta"
               >
                 <PlantMark
@@ -322,11 +325,11 @@ export function Home() {
                   name={plant.name}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
-                <div className="relative m-4 bg-[#FDFBF8]/90 px-4 py-3 text-[#173E3A]">
-                  <p className="text-2xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+                <div className="relative m-2 bg-[#FDFBF8]/90 px-2 py-2 text-[#173E3A] sm:m-4 sm:px-4 sm:py-3">
+                  <p className="text-lg sm:text-2xl" style={{ fontFamily: 'Playfair Display, serif' }}>
                     {plant.name}
                   </p>
-                  <p className="mt-1 text-sm font-semibold">{money(plant.priceCents)}</p>
+                  <p className="mt-1 text-xs font-semibold sm:text-sm">{money(plant.priceCents)}</p>
                 </div>
               </Link>
             ))}
@@ -335,19 +338,19 @@ export function Home() {
       )}
 
       {featuredPlant && (
-        <section className="mx-auto grid max-w-6xl gap-4 px-6 pb-16 md:grid-cols-[1.4fr_1fr]">
-          <Link to={`/plantas/${featuredPlant.slug}`} className="relative flex min-h-80 items-end overflow-hidden bg-[#274C4A] p-8 text-white">
+        <section className="mx-auto grid max-w-6xl gap-3 px-4 pb-12 sm:gap-4 sm:px-6 sm:pb-16 md:grid-cols-[1.4fr_1fr]">
+          <Link to={`/plantas/${featuredPlant.slug}`} className="relative flex min-h-56 items-end overflow-hidden bg-[#274C4A] p-5 text-white sm:min-h-80 sm:p-8">
             <img src={`/plants/${featuredPlant.slug}.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80" />
-            <span className="relative text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <span className="relative text-3xl sm:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
               {featuredPlant.name}
             </span>
           </Link>
-          <div className="grid gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-1">
             {plants
               .filter((plant) => plant.slug !== featuredPlant.slug)
               .slice(0, 2)
               .map((plant) => (
-                <Link key={plant.slug} to={`/plantas/${plant.slug}`} className="relative min-h-36 overflow-hidden bg-[#EEF1F0]">
+                <Link key={plant.slug} to={`/plantas/${plant.slug}`} className="relative min-h-28 overflow-hidden bg-[#EEF1F0] sm:min-h-36">
                   <img src={`/plants/${plant.slug}.jpg`} alt={plant.name} className="h-full w-full object-cover" />
                 </Link>
               ))}
@@ -355,21 +358,21 @@ export function Home() {
         </section>
       )}
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="text-center text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+        <h2 className="text-center text-3xl sm:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
           Para la ceremonia
         </h2>
-        <div className="mt-12 grid gap-8 md:grid-cols-3">
+        <div className="mt-8 grid gap-8 sm:mt-12 md:grid-cols-3">
           {[
             ['La urna vuelve a la tierra', 'Está hecha para biodegradarse. No queda un objeto de más.'],
             ['La semilla va adentro', 'Flores o árboles. Se elige cuál crece con esa pieza.'],
             ['El pedido las guarda juntas', 'Queda escrito qué semilla viaja con cuál urna.'],
           ].map(([title, text]) => (
             <article key={title} className="text-center">
-              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#E4F1E1] text-xl text-[#274C4A]">
+              <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E4F1E1] text-lg text-[#274C4A] sm:h-14 sm:w-14 sm:text-xl">
                 ✦
               </span>
-              <h3 className="mt-4 text-xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <h3 className="mt-4 text-lg sm:text-xl" style={{ fontFamily: 'Playfair Display, serif' }}>
                 {title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-[#274C4A]/70">{text}</p>
@@ -378,9 +381,9 @@ export function Home() {
         </div>
       </section>
 
-      <section className="bg-[#E4F1E1] px-6 py-16">
+      <section className="bg-[#E4F1E1] px-4 py-12 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-xl text-center">
-          <h2 className="text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl sm:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
             Recibí novedades
           </h2>
           <p className="mt-3 text-sm text-[#274C4A]/75">Piezas nuevas y semillas de estación.</p>
@@ -415,9 +418,9 @@ export function Home() {
 
 function CategoryTile({ to, title, image }: { to: string; title: string; image?: string }) {
   return (
-    <Link to={to} className="relative flex min-h-40 items-end overflow-hidden bg-[#E2E8F1] p-5 text-[#274C4A]">
+    <Link to={to} className="relative flex min-h-32 items-end overflow-hidden bg-[#E2E8F1] p-4 text-[#274C4A] sm:min-h-40 sm:p-5">
       {image && <img src={`/plants/${image}.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-      <span className="relative bg-[#FDFBF8]/85 px-3 py-1 text-2xl" style={{ fontFamily: 'Playfair Display, serif' }}>
+      <span className="relative bg-[#FDFBF8]/85 px-2 py-1 text-xl sm:px-3 sm:text-2xl" style={{ fontFamily: 'Playfair Display, serif' }}>
         {title}
       </span>
     </Link>

@@ -20,7 +20,7 @@ export function Shop() {
 
   return (
     <main className="px-5 pb-8 md:px-12">
-      <h1 className="display pt-8 text-center text-6xl uppercase leading-none text-moss md:text-8xl">Urnas</h1>
+      <h1 className="display pt-8 text-center text-4xl uppercase leading-none text-moss sm:text-6xl md:text-8xl">Urnas</h1>
       <p className="mx-auto mt-6 max-w-xl text-center text-lg text-ink/75">
         Elegí la pieza. En la ficha asociás la semilla que va a crecer adentro.
       </p>
@@ -48,7 +48,7 @@ export function Shop() {
           >
             <UrnView slug={product.slug} className="pointer-events-none h-64 w-56" />
             <p className="mt-6 text-xs tracking-[0.16em] uppercase text-[#173E3A]/70">{product.category}</p>
-            <h2 className="mt-2 text-4xl uppercase" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <h2 className="mt-2 text-2xl uppercase sm:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
               {product.name}
             </h2>
             <p className="mt-2 text-sm font-semibold">{money(product.priceCents)}</p>

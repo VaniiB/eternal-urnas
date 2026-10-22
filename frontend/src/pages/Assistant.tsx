@@ -23,7 +23,7 @@ export function Assistant() {
 
   return (
     <main className="mx-auto max-w-2xl px-5 py-12">
-      <h1 className="display text-5xl">Asistente de ceremonia</h1>
+      <h1 className="display text-3xl sm:text-5xl">Asistente de ceremonia</h1>
       <p className="mt-3 text-ink/70">
         Contá el vínculo, el lugar y el tono. Recibís una urna, un texto y un checklist. Sin apuro de venta.
       </p>

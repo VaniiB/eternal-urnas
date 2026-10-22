@@ -55,7 +55,7 @@ export function Checkout() {
   return (
     <main className="grid gap-12 px-5 py-12 md:grid-cols-[1.1fr_0.9fr] md:px-12">
       <form onSubmit={submit} className="max-w-xl space-y-4">
-        <h1 className="display text-5xl">Pedido</h1>
+        <h1 className="display text-3xl sm:text-5xl">Pedido</h1>
         <p className="text-ink/60">El precio final lo confirma la tienda al reservar el stock.</p>
         <input name="name" required minLength={3} placeholder="Nombre y apellido" className={field} />
         <input name="email" type="email" required placeholder="Email" className={field} />

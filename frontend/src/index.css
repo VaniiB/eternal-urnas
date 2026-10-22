@@ -23,13 +23,26 @@
 }
 
 html {
-  /* Diseño calibrado a zoom 125%: al 100% del navegador se ve igual que esas capturas */
-  font-size: 125%;
+  /* Desktop mantiene la escala del diseño; mobile/tablet usan tamaño base */
+  font-size: 100%;
   scroll-behavior: smooth;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 112.5%;
+  }
+}
+
+@media (min-width: 1100px) {
+  html {
+    font-size: 125%;
+  }
 }
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background: var(--page-bg);
   color: var(--page-ink);
   font-family: var(--font-sans);
