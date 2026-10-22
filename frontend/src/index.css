@@ -1,0 +1,125 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Bodoni Moda', serif;
+  --font-sans: 'Outfit', sans-serif;
+  --color-bg: #f6f0e6;
+  --color-ink: #2c2420;
+  --color-moss: #1e6b4a;
+  --color-paper: #fffdf8;
+}
+
+:root {
+  --page-bg: #f8f5ef;
+  --page-ink: #173e3a;
+  --page-muted: rgb(23 62 58 / 72%);
+  --page-surface: #fdfbf8;
+  --page-line: rgb(23 62 58 / 12%);
+  --page-accent: #70908b;
+  --page-gold: #b39a70;
+  --header-bg: #fdfbf8;
+  --grain-opacity: 0.45;
+  --grain-blend: multiply;
+}
+
+html {
+  /* Diseño calibrado a zoom 125%: al 100% del navegador se ve igual que esas capturas */
+  font-size: 125%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--page-ink);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--color-moss);
+  color: var(--page-bg);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.hero-grain {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 30% 20%, rgba(255, 252, 245, 0.55), transparent 55%),
+    radial-gradient(ellipse at 70% 75%, rgba(90, 70, 50, 0.08), transparent 50%);
+  background-size: 180px 180px, 100% 100%, 100% 100%;
+}
+
+.word-wheel {
+  animation: wheel-spin 90s linear infinite;
+}
+
+@keyframes wheel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-wheel {
+    animation: none;
+  }
+}
+
+.diamond {
+  width: 11px;
+  height: 11px;
+  background: var(--color-ink);
+  transform: rotate(45deg);
+}
+
+.site-header {
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.site-header.is-hidden {
+  transform: translate3d(0, calc(-100% - 24px), 0);
+}
+
+.full-menu {
+  transform: translate3d(0, -100%, 0);
+  transition: transform 0.9s cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+.full-menu.is-open {
+  transform: translate3d(0, 0, 0);
+}
+
+.cursor-pill {
+  transform: translate(16px, -50%) scale(0.7);
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cursor-pill.is-on {
+  opacity: 1;
+  transform: translate(16px, -50%) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .full-menu,
+  .cursor-pill {
+    transition: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .cursor-pill {
+    display: none !important;
+  }
+}
