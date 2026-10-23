@@ -45,7 +45,7 @@ export function CartPage() {
                   <div className="grid gap-0 sm:grid-cols-2">
                     <div className="flex gap-3 border-b border-[var(--page-line)] p-4 sm:border-r sm:border-b-0 sm:p-5">
                       <div className="h-28 w-24 shrink-0 sm:h-32 sm:w-28">
-                        <UrnView slug={item.urnSlug} className="pointer-events-none h-full w-full" />
+                        <UrnView slug={item.urnSlug} quality="lite" className="pointer-events-none h-full w-full" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-[11px] tracking-[0.14em] uppercase text-[var(--page-muted)]">Producto 1 · Urna</p>

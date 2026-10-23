@@ -8,4 +8,13 @@ export default defineConfig({
     port: 5173,
     proxy: { '/api': 'http://localhost:4000' },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three', '@react-three/fiber', '@react-three/drei'],
+        },
+      },
+    },
+  },
 })

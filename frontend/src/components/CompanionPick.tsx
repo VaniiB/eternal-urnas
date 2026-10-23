@@ -48,7 +48,7 @@ export function CompanionPick({
                     <PlantMark slug={item.slug} name={item.name} className="h-full w-full" />
                   </div>
                 ) : (
-                  <UrnView slug={item.slug} className="pointer-events-none mx-auto h-40 w-40" />
+                  <UrnView slug={item.slug} quality="lite" className="pointer-events-none mx-auto h-40 w-40" />
                 )}
                 <p
                   className="mt-4 text-2xl leading-tight text-[#173E3A] uppercase md:text-3xl"

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom'
 import { useCart } from '../cart'
 import { CompanionPick } from '../components/CompanionPick'
-import { UrnView } from '../components/UrnView'
+import { UrnLineup } from '../components/UrnLineup'
+import { preloadUrn, UrnView } from '../components/UrnView'
 import { api, btn, money, toneForUrn, type Product } from '../lib'
 
 function suggestedPlant(seed: string, plants: Product[]) {
@@ -18,7 +19,6 @@ export function ProductPage() {
   const [params] = useSearchParams()
   const cart = useCart()
   const [product, setProduct] = useState<Product | null>(null)
-  const [others, setOthers] = useState<Product[]>([])
   const [plants, setPlants] = useState<Product[]>([])
   const [plantSlug, setPlantSlug] = useState(params.get('planta') ?? '')
   const [error, setError] = useState('')
@@ -27,12 +27,10 @@ export function ProductPage() {
   useEffect(() => {
     setAdded(false)
     setProduct(null)
+    if (slug) preloadUrn(slug)
     api<Product>(`/api/products/${slug}`)
       .then(setProduct)
       .catch((reason: Error) => setError(reason.message))
-    api<Product[]>('/api/products?kind=urna')
-      .then((list) => setOthers(list.filter((item) => item.slug !== slug && item.slug !== 'combo')))
-      .catch(() => setOthers([]))
     api<Product[]>('/api/products?kind=planta')
       .then(setPlants)
       .catch(() => setPlants([]))
@@ -119,34 +117,7 @@ export function ProductPage() {
         </button>
       </CompanionPick>
 
-      <img
-        src="/brand/urnas-linea.jpg"
-        alt="Línea de urnas en taracea, madera y kraft"
-        className="mx-auto w-full max-w-6xl px-5"
-      />
-
-      {others.length > 0 && (
-        <section className="px-5 py-24 md:px-12">
-          <h2 className="display text-center text-3xl uppercase leading-none text-moss sm:text-5xl md:text-7xl">Las otras urnas</h2>
-          <div className="mx-auto mt-14 grid max-w-5xl gap-10 sm:grid-cols-2 lg:grid-cols-3">
-            {others.map((item) => (
-              <Link
-                key={item.slug}
-                to={`/tienda/${item.slug}`}
-                className="p-5 text-center text-[#173E3A]"
-                style={{ backgroundColor: toneForUrn(item.slug) }}
-                data-cursor="Ver urna"
-              >
-                <UrnView slug={item.slug} className="pointer-events-none mx-auto h-48 w-48" />
-                <p className="mt-4 text-3xl uppercase" style={{ fontFamily: 'Playfair Display, serif' }}>
-                  {item.name}
-                </p>
-                <p className="mt-2 text-sm text-[#173E3A]/70">{money(item.priceCents)}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <UrnLineup title="La colección" />
     </main>
   )
 }
@@ -200,7 +171,7 @@ function UrnStage({
   const story = Math.min(1, Math.max(0, (progress - 0.22) / 0.5))
 
   return (
-    <section ref={track} className="relative h-[230vh]" style={{ backgroundColor: toneForUrn(slug) }}>
+    <section ref={track} className="relative h-[160vh] sm:h-[180vh]" style={{ backgroundColor: toneForUrn(slug) }}>
       <div className="sticky top-0 h-svh overflow-hidden">
         <div className="hero-grain" aria-hidden />
         <h1
@@ -229,7 +200,7 @@ function UrnStage({
             transform: 'translateX(-50%)',
           }}
         >
-          <UrnView slug={slug} className="h-full w-full" />
+          <UrnView slug={slug} quality="full" className="h-full w-full" />
         </div>
         <div
           className="absolute inset-x-0 top-[46%] z-20 flex items-start justify-between gap-3 px-3 sm:top-[48%] sm:gap-8 sm:px-6 md:px-20"

@@ -199,6 +199,7 @@ export function Home() {
                 >
                   <UrnView
                     slug={product.slug}
+                    quality="lite"
                     spin={hover === product.slug && !drag.current.active}
                     className="pointer-events-none h-full w-full"
                   />
@@ -244,7 +245,7 @@ export function Home() {
               style={{ backgroundColor: toneForUrn('bruma') }}
             >
               <div className="pointer-events-none absolute inset-0">
-                <UrnView slug="bruma" className="h-full w-full" />
+                <UrnView slug="bruma" quality="lite" className="h-full w-full" />
               </div>
               <span className="relative text-2xl sm:text-3xl" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Urnas
@@ -272,7 +273,7 @@ export function Home() {
             >
               {product.kind === 'urna' ? (
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center pt-2 pb-14">
-                  <UrnView slug={product.slug} className="h-full w-full scale-110" />
+                  <UrnView slug={product.slug} quality="lite" className="h-full w-full scale-110" />
                 </div>
               ) : (
                 <PlantMark
@@ -301,7 +302,7 @@ export function Home() {
         <section className="mx-auto grid max-w-6xl items-center gap-5 px-4 py-12 sm:gap-8 sm:px-6 sm:py-16 md:grid-cols-2">
           <div className="p-5 sm:p-6" style={{ backgroundColor: toneForUrn(combo.slug) }}>
             <div className="h-56 sm:h-80">
-              <UrnView slug={combo.slug} className="h-full w-full" />
+              <UrnView slug={combo.slug} quality="lite" className="h-full w-full" />
             </div>
             <h2 className="mt-5 text-2xl sm:mt-6 sm:text-3xl" style={{ fontFamily: 'Playfair Display, serif' }}>
               {combo.name}

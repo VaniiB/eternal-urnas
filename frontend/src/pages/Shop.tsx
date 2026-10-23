@@ -46,7 +46,7 @@ export function Shop() {
             style={{ backgroundColor: toneForUrn(product.slug) }}
             data-cursor="Ver urna"
           >
-            <UrnView slug={product.slug} className="pointer-events-none h-64 w-56" />
+            <UrnView slug={product.slug} quality="lite" className="pointer-events-none h-64 w-56" />
             <p className="mt-6 text-xs tracking-[0.16em] uppercase text-[#173E3A]/70">{product.category}</p>
             <h2 className="mt-2 text-2xl uppercase sm:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
               {product.name}

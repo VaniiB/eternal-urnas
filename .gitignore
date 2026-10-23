@@ -8,3 +8,5 @@ dist
 .sql-install
 .preview
 *.local
+models-source/
+frontend/scripts/compress-urnas.mjs.bak
