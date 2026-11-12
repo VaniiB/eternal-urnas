@@ -200,8 +200,8 @@ export function Home() {
                   <UrnView
                     slug={product.slug}
                     spin={centered && hover === product.slug && !drag.current.active}
-                    quality={centered ? 'full' : 'lite'}
-                    priority={centered}
+                    quality="full"
+                    priority
                     className="pointer-events-none h-full w-full"
                   />
                 </div>

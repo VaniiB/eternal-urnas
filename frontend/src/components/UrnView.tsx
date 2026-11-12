@@ -180,12 +180,12 @@ export function UrnView({
           key={url}
           className={ready ? 'opacity-100 transition-opacity duration-500' : 'opacity-0'}
           camera={{ position: [0, 0.04, 4.2], fov: 28 }}
-          dpr={lite ? [1, 1] : [1, 1.25]}
-          gl={{ alpha: true, antialias: !lite, powerPreference: 'high-performance' }}
+          dpr={lite ? [1, 1.5] : [1, 2]}
+          gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           frameloop={spin || !lite ? 'always' : 'demand'}
           onCreated={({ gl }) => {
             gl.setClearColor(0x000000, 0)
-            gl.toneMappingExposure = 0.78
+            gl.toneMappingExposure = lite ? 0.88 : 1
           }}
         >
           <hemisphereLight color="#fff6ee" groundColor="#c4b5a4" intensity={0.72} />
@@ -194,7 +194,7 @@ export function UrnView({
           <directionalLight position={[-2.2, 1.2, 2.4]} intensity={0.32} />
           <Suspense fallback={null}>
             <UrnModel url={url} spin={spin} onReady={() => setReady(true)} />
-            {!lite && <Environment preset="studio" environmentIntensity={0.32} />}
+            {!lite && <Environment preset="studio" environmentIntensity={0.55} />}
           </Suspense>
         </Canvas>
       )}
