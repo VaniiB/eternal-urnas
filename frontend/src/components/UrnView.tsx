@@ -1,7 +1,8 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { ContactShadows, useGLTF } from '@react-three/drei'
+import { ContactShadows, Environment, useGLTF } from '@react-three/drei'
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Box3, Group, MathUtils, Mesh, PerspectiveCamera, Vector3 } from 'three'
+import { toneForUrn } from '../lib'
 
 const modelBySlug: Record<string, string> = {
   raiz: '/urnas/raiz.glb',
@@ -14,20 +15,30 @@ const modelBySlug: Record<string, string> = {
   combo: '/urnas/bruma.glb',
 }
 
+const homeSlugs = ['raiz', 'bruma', 'cauce', 'carton'] as const
+
 function modelUrl(slug: string) {
   return modelBySlug[slug] ?? modelBySlug.bruma
 }
 
-function UrnModel({
-  url,
-  spin,
-  lite,
-}: {
-  url: string
-  spin: boolean
-  lite: boolean
-}) {
-  const { scene } = useGLTF(url, true)
+function UrnPlaceholder({ slug, className = '' }: { slug: string; className?: string }) {
+  return (
+    <div className={`grid place-items-center ${className}`} style={{ background: 'transparent' }}>
+      <svg viewBox="0 0 120 160" className="h-[72%] w-[58%] animate-pulse" aria-hidden>
+        <path
+          d="M38 18h44l6 22c8 10 12 22 12 36 0 28-14 52-40 52S20 104 20 76c0-14 4-26 12-36z"
+          fill={toneForUrn(slug)}
+          stroke="#173E3A22"
+          strokeWidth="1.5"
+        />
+        <rect x="34" y="10" width="52" height="12" rx="4" fill="#173E3A18" />
+      </svg>
+    </div>
+  )
+}
+
+function UrnModel({ url, spin, onReady }: { url: string; spin: boolean; onReady: () => void }) {
+  const { scene } = useGLTF(url)
   const model = useMemo(() => scene.clone(true), [scene])
   const camera = useThree((state) => state.camera) as PerspectiveCamera
   const view = useThree((state) => state.size)
@@ -41,22 +52,13 @@ function UrnModel({
   useFrame((_, delta) => {
     const node = pivot.current
     if (!node) return
-    if (spinRef.current) {
-      angle.current += delta * 0.75
-      node.rotation.y = angle.current
-      invalidate()
-      return
+    if (spinRef.current) angle.current += delta * 0.9
+    else {
+      const rest = 0
+      const deltaAngle = Math.atan2(Math.sin(angle.current - rest), Math.cos(angle.current - rest))
+      angle.current = rest + MathUtils.damp(deltaAngle, 0, 4, delta)
     }
-    if (Math.abs(angle.current) < 0.002) {
-      angle.current = 0
-      node.rotation.y = 0
-      return
-    }
-    const rest = 0
-    const deltaAngle = Math.atan2(Math.sin(angle.current - rest), Math.cos(angle.current - rest))
-    angle.current = rest + MathUtils.damp(deltaAngle, 0, 4, delta)
     node.rotation.y = angle.current
-    invalidate()
   })
 
   useLayoutEffect(() => {
@@ -66,20 +68,6 @@ function UrnModel({
     model.traverse((child) => {
       if ((child as PerspectiveCamera).isCamera || /camera/i.test(child.name)) child.visible = false
       else child.visible = true
-      if (child instanceof Mesh) {
-        child.castShadow = false
-        child.receiveShadow = false
-        if (lite) {
-          const mats = Array.isArray(child.material) ? child.material : [child.material]
-          for (const mat of mats) {
-            if (!mat) continue
-            if ('normalMap' in mat) (mat as { normalMap: unknown }).normalMap = null
-            if ('aoMap' in mat) (mat as { aoMap: unknown }).aoMap = null
-            if ('roughnessMap' in mat) (mat as { roughnessMap: unknown }).roughnessMap = null
-            mat.needsUpdate = true
-          }
-        }
-      }
     })
     model.updateMatrixWorld(true)
 
@@ -129,87 +117,84 @@ function UrnModel({
     camera.far = distance * 8
     camera.lookAt(0, 0, 0)
     camera.updateProjectionMatrix()
+    onReady()
     invalidate()
-  }, [camera, invalidate, lite, model, view.height, view.width])
+  }, [camera, invalidate, model, onReady, view.height, view.width])
 
   return (
     <group ref={pivot}>
       <primitive object={model} />
-      {!lite ? (
-        <ContactShadows position={[0, shadowY, 0]} opacity={0.22} scale={2.6} blur={1.8} far={1.8} frames={1} />
-      ) : null}
+      <ContactShadows position={[0, shadowY, 0]} opacity={0.28} scale={3} blur={2.2} far={2.4} />
     </group>
   )
-}
-
-function useInView(active: boolean) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(!active)
-
-  useEffect(() => {
-    if (!active) {
-      setVisible(true)
-      return
-    }
-    const el = ref.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) setVisible(true)
-      },
-      { rootMargin: '120px', threshold: 0.05 },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [active])
-
-  return { ref, visible }
 }
 
 export function UrnView({
   slug = 'bruma',
   className = '',
   spin = false,
-  quality = 'lite',
+  quality = 'full',
+  priority = false,
 }: {
   slug?: string
   className?: string
   spin?: boolean
-  /** lite: cards/grids (sin HDR, sin sombras dinámicas). full: ficha / hero. */
-  quality?: 'lite' | 'full'
+  quality?: 'full' | 'lite'
+  priority?: boolean
 }) {
   const url = modelUrl(slug)
-  const full = quality === 'full'
-  const { ref, visible } = useInView(true)
+  const root = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(priority)
+  const [ready, setReady] = useState(false)
+  const lite = quality === 'lite'
+
+  useEffect(() => {
+    if (priority) {
+      setVisible(true)
+      return
+    }
+    const node = root.current
+    if (!node) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: '120px' },
+    )
+    io.observe(node)
+    return () => io.disconnect()
+  }, [priority])
+
+  useEffect(() => {
+    setReady(false)
+  }, [url])
 
   return (
-    <div ref={ref} className={className}>
-      {!visible ? (
-        <div className="h-full w-full animate-pulse rounded-sm bg-[#173E3A]/06" aria-hidden />
-      ) : (
+    <div ref={root} className={`relative ${className}`}>
+      {!ready && <UrnPlaceholder slug={slug} className="absolute inset-0 z-10" />}
+      {visible && (
         <Canvas
           key={url}
+          className={ready ? 'opacity-100 transition-opacity duration-500' : 'opacity-0'}
           camera={{ position: [0, 0.04, 4.2], fov: 28 }}
-          dpr={full ? [1, 1.35] : [1, 1]}
-          frameloop={spin ? 'always' : 'demand'}
-          gl={{
-            alpha: true,
-            antialias: full,
-            powerPreference: 'high-performance',
-            stencil: false,
-            depth: true,
-          }}
+          dpr={lite ? [1, 1] : [1, 1.25]}
+          gl={{ alpha: true, antialias: !lite, powerPreference: 'high-performance' }}
+          frameloop={spin || !lite ? 'always' : 'demand'}
           onCreated={({ gl }) => {
             gl.setClearColor(0x000000, 0)
-            gl.toneMappingExposure = 0.82
+            gl.toneMappingExposure = 0.78
           }}
         >
-          <hemisphereLight color="#fff6ee" groundColor="#c4b5a4" intensity={full ? 0.78 : 0.95} />
-          <ambientLight intensity={full ? 0.22 : 0.35} />
-          <directionalLight position={[2.2, 3.4, 5.2]} intensity={full ? 1.25 : 1.05} />
-          {full ? <directionalLight position={[-2.2, 1.2, 2.4]} intensity={0.28} /> : null}
+          <hemisphereLight color="#fff6ee" groundColor="#c4b5a4" intensity={0.72} />
+          <ambientLight intensity={0.18} />
+          <directionalLight position={[2.2, 3.4, 5.2]} intensity={1.35} />
+          <directionalLight position={[-2.2, 1.2, 2.4]} intensity={0.32} />
           <Suspense fallback={null}>
-            <UrnModel url={url} spin={spin} lite={!full} />
+            <UrnModel url={url} spin={spin} onReady={() => setReady(true)} />
+            {!lite && <Environment preset="studio" environmentIntensity={0.32} />}
           </Suspense>
         </Canvas>
       )}
@@ -217,8 +202,14 @@ export function UrnView({
   )
 }
 
-/** Precarga selectiva: solo la urna de la ficha o la del centro del carrusel. */
 export function preloadUrn(slug: string) {
-  const url = modelUrl(slug)
-  useGLTF.preload(url, true)
+  useGLTF.preload(modelUrl(slug))
+}
+
+if (typeof window !== 'undefined') {
+  const warm = () => {
+    for (const slug of homeSlugs) useGLTF.preload(modelBySlug[slug])
+  }
+  if ('requestIdleCallback' in window) window.requestIdleCallback(warm)
+  else window.setTimeout(warm, 500)
 }

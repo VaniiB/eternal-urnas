@@ -67,7 +67,7 @@ export function PlantPage() {
         </p>
         <section className="mt-6 grid items-start gap-10 md:grid-cols-2">
           <div className="aspect-square overflow-hidden bg-[#f2f2f2]">
-            <PlantMark slug={plant.slug} name={plant.name} className="h-full w-full" />
+            <PlantMark slug={plant.slug} name={plant.name} priority className="h-full w-full" />
           </div>
           <div className="md:pt-4">
             <p className="text-xs text-black/45">{plant.category}</p>

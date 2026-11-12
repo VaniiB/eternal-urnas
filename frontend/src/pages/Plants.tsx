@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { PlantCard } from '../components/PlantCard'
+import { PlantMark } from '../components/PlantMark'
 import { api, type Product } from '../lib'
 
 const filters = ['Todas', 'Flores', 'Árboles'] as const
@@ -54,7 +55,7 @@ export function Plants() {
       </p>
 
       <section className="relative h-[46vh] min-h-[300px] overflow-hidden bg-[#e7e2da]">
-        <img src="/plants/lavanda.jpg" alt="" className="h-full w-full object-cover" />
+        <PlantMark slug="lavanda" name="Lavanda" priority className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
           <p className="text-xs tracking-[0.22em] uppercase">Semillas para la ceremonia</p>
@@ -87,7 +88,7 @@ export function Plants() {
                 className="relative h-64 overflow-hidden bg-[#eceae6] text-left text-white md:h-80"
               >
                 {photo && (
-                  <img src={`/plants/${photo.slug}.jpg`} alt="" className="h-full w-full object-cover" />
+                  <PlantMark slug={photo.slug} name={photo.name} className="h-full w-full object-cover" />
                 )}
                 <span className="absolute inset-0 bg-black/25" />
                 <span className="absolute inset-0 flex items-center justify-center text-3xl font-medium tracking-tight">

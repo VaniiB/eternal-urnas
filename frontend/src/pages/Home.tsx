@@ -199,8 +199,9 @@ export function Home() {
                 >
                   <UrnView
                     slug={product.slug}
-                    quality="lite"
-                    spin={hover === product.slug && !drag.current.active}
+                    spin={centered && hover === product.slug && !drag.current.active}
+                    quality={centered ? 'full' : 'lite'}
+                    priority={centered}
                     className="pointer-events-none h-full w-full"
                   />
                 </div>
@@ -341,7 +342,7 @@ export function Home() {
       {featuredPlant && (
         <section className="mx-auto grid max-w-6xl gap-3 px-4 pb-12 sm:gap-4 sm:px-6 sm:pb-16 md:grid-cols-[1.4fr_1fr]">
           <Link to={`/plantas/${featuredPlant.slug}`} className="relative flex min-h-56 items-end overflow-hidden bg-[#274C4A] p-5 text-white sm:min-h-80 sm:p-8">
-            <img src={`/plants/${featuredPlant.slug}.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80" />
+            <PlantMark slug={featuredPlant.slug} name={featuredPlant.name} priority className="absolute inset-0 h-full w-full object-cover opacity-80" />
             <span className="relative text-3xl sm:text-4xl" style={{ fontFamily: 'Playfair Display, serif' }}>
               {featuredPlant.name}
             </span>
@@ -352,7 +353,7 @@ export function Home() {
               .slice(0, 2)
               .map((plant) => (
                 <Link key={plant.slug} to={`/plantas/${plant.slug}`} className="relative min-h-28 overflow-hidden bg-[#EEF1F0] sm:min-h-36">
-                  <img src={`/plants/${plant.slug}.jpg`} alt={plant.name} className="h-full w-full object-cover" />
+                  <PlantMark slug={plant.slug} name={plant.name} className="h-full w-full object-cover" />
                 </Link>
               ))}
           </div>
@@ -420,7 +421,7 @@ export function Home() {
 function CategoryTile({ to, title, image }: { to: string; title: string; image?: string }) {
   return (
     <Link to={to} className="relative flex min-h-32 items-end overflow-hidden bg-[#E2E8F1] p-4 text-[#274C4A] sm:min-h-40 sm:p-5">
-      {image && <img src={`/plants/${image}.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+      {image && <PlantMark slug={image} name={title} className="absolute inset-0 h-full w-full object-cover" />}
       <span className="relative bg-[#FDFBF8]/85 px-2 py-1 text-xl sm:px-3 sm:text-2xl" style={{ fontFamily: 'Playfair Display, serif' }}>
         {title}
       </span>
