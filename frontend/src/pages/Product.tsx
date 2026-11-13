@@ -132,7 +132,7 @@ export function ProductPage() {
                 style={{ backgroundColor: toneForUrn(item.slug) }}
                 data-cursor="Ver urna"
               >
-                <UrnView slug={item.slug} quality="lite" className="pointer-events-none mx-auto h-48 w-48" />
+                <UrnView slug={item.slug} className="pointer-events-none mx-auto h-48 w-48" />
                 <p className="mt-4 text-3xl uppercase" style={{ fontFamily: 'Playfair Display, serif' }}>
                   {item.name}
                 </p>
@@ -224,7 +224,7 @@ function UrnStage({
             transform: 'translateX(-50%)',
           }}
         >
-          <UrnView slug={slug} priority className="h-full w-full" />
+          <UrnView slug={slug} className="h-full w-full" />
         </div>
         <div
           className="absolute inset-x-0 top-[46%] z-20 flex items-start justify-between gap-3 px-3 sm:top-[48%] sm:gap-8 sm:px-6 md:px-20"

@@ -31,7 +31,7 @@ export function UrnLineup({ title = 'La colección' }: { title?: string }) {
             style={{ backgroundColor: toneForUrn(item.slug) }}
             data-cursor="Ver urna"
           >
-            <UrnView slug={item.slug} quality="lite" className="pointer-events-none h-44 w-full sm:h-52" />
+            <UrnView slug={item.slug} className="pointer-events-none h-44 w-full sm:h-52" />
             <p className="mt-3 text-xl uppercase md:text-2xl" style={{ fontFamily: 'Playfair Display, serif' }}>
               {item.name}
             </p>
