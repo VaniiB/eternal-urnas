@@ -46,8 +46,16 @@ function UrnModel({ url, spin }: { url: string; spin: boolean }) {
     model.rotation.set(0, 0, 0)
     model.scale.set(1, 1, 1)
     model.traverse((child) => {
-      if ((child as PerspectiveCamera).isCamera || /camera/i.test(child.name)) child.visible = false
-      else child.visible = true
+      if ((child as PerspectiveCamera).isCamera || /camera/i.test(child.name)) {
+        child.visible = false
+        return
+      }
+      if (child instanceof Mesh) {
+        // Dimension left a torus + pancake cylinder in front of every urn.
+        child.visible = /envase/i.test(child.name)
+        return
+      }
+      child.visible = true
     })
     model.updateMatrixWorld(true)
 
